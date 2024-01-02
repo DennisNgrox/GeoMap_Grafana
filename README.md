@@ -57,3 +57,5 @@ Configuração das métricas:
 
 ![image](https://github.com/DennisNgrox/GeoMap_Grafana/assets/81188924/d99ff9c6-2582-497d-8b4f-d9206c0e5bef)
 
+`Utilize a query SQL no campo que está na imagem`
+
