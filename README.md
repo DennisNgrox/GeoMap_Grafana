@@ -12,26 +12,17 @@ Format AS: Table
 Query:
 
 ```
-SELECT
-  h.host,
-  hi.location_lat AS latitude,
-  hi.location_lon AS longitude,
-  (
-    SELECT hiu.value
-    FROM zabbix.history_uint hiu
-    JOIN zabbix.items i ON hiu.itemid = i.itemid
-    WHERE i.key_ LIKE '%icmpping%'
-      AND i.hostid = h.hostid
-    ORDER BY hiu.clock DESC
-    LIMIT 1
-  ) AS value
-FROM
-  zabbix.hosts h
-JOIN
-  zabbix.host_inventory hi ON h.hostid = hi.hostid
-WHERE
-  hi.location_lat IS NOT NULL
-  AND hi.location_lon IS NOT NULL;
+SELECT h.host, hi.location_lat AS `latitude`, hi.location_lon AS `longitude`, hy.value
+
+FROM hosts h
+
+                INNER JOIN host_inventory hi ON h.hostid = hi.hostid AND hi.location_lat != '' AND hi.location_lon != ''
+
+                INNER JOIN items i ON h.hostid = i.hostid AND (i.key_ = 'icmpping' OR i.key_ LIKE 'icmpping[%')
+
+    LEFT JOIN history_uint hy ON i.itemid = hy.itemid AND hy.clock = (SELECT MAX(clock) FROM history_uint WHERE itemid = i.itemid)
+
+WHERE h.status = 0 AND i.status = 0
 ```
 
 Explicação da Query:
